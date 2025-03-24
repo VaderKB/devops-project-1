@@ -30,7 +30,7 @@ jobs:
             - name: Prepare cache folder
               run: |
                 mkdir -p ${{ env.CACHE_FOLDER }}/create_keys_cache
-                echo " this value is ${{ env.JOB_FOLDER }}$(terraform output -raw key_pair_output)"
+                echo " this value is ${{ env.JOB_FOLDER }}$(terraform -chdir=${{ env.JOB_FOLDER }} output -raw key_pair_output)"
                 cp "${{ env.JOB_FOLDER }}terraform.tfstate" "${{ env.JOB_FOLDER }}$(terraform output -raw key_pair_output)" ${{ env.CACHE_FOLDER }}/create_keys_cache/
                 ls -lrt ${{ env.CACHE_FOLDER }}/create_keys_cache/
             - name: cache data
