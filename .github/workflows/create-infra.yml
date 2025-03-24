@@ -34,7 +34,7 @@ jobs:
                 mkdir create_keys_cache
                 cp terraform.tfstate create_keys_cache/
                 ls -lrt
-                echo "blah=$(terraform -chdir=create-infra/ output -raw key_pair_output)"
+                echo "blah=$(terraform output -raw key_pair_output)"
                 cp "$(terraform -chdir=create-infra/ output -raw key_pair_output)" create_keys_cache/
                 ls -lrt create_keys_cache/
             - name: Show Key Path
