@@ -31,11 +31,10 @@ jobs:
               run: |
                 mkdir -p ${{ env.CACHE_FOLDER }}/create_keys_cache
                 cp "${{ env.JOB_FOLDER }}terraform.tfstate" "${{ env.JOB_FOLDER }}$(terraform -chdir=${{ env.JOB_FOLDER }} output -raw key_pair_output)" ${{ env.CACHE_FOLDER }}/create_keys_cache/
-                ls -lrt ${{ env.CACHE_FOLDER }}/create_keys_cache/
             - name: cache data
               uses: actions/cache@v4
               with:
-                path: "${{ env.CACHE_FOLDER }}/create_keys_cache"
+                path: "${{ env.CACHE_FOLDER }}/"
                 key: ec2-key-setup-test
             - name: output key_pair_name
               id: publish-key-pair-name
@@ -54,7 +53,7 @@ jobs:
             - name: load cache
               uses: actions/cache@v4
               with:
-                path: "${{ env.JOB_FOLDER }}create_keys_cache"
+                path: "${{ env.CACHE_FOLDER }}/"
                 key: ec2-key-setup-test
                 restore-keys: ec2
             - name: check
