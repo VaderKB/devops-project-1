@@ -32,7 +32,7 @@ jobs:
                 ls -lrt
                 cd create-infra
                 mkdir create_keys_cache
-                cp terraform.tfstate "$(terraform -chdir=create-infra/ output -raw key_pair_output)" create_keys_cache/
+                cp terraform.tfstate create_keys_cache/
                 ls -lrt create_keys_cache/
             - name: Show Key Path
               run: 
