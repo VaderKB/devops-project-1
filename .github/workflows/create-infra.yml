@@ -29,6 +29,7 @@ jobs:
                 ls -lart
             - name: Prepare state file and ec2 key
               run: |
+                ls -lrt
                 cd create-infra
                 mkdir create_keys_cache
                 cp terraform.tfstate "$(terraform -chdir=create-infra/ output -raw key_pair_output)" create_keys_cache/
