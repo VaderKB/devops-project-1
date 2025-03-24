@@ -40,9 +40,9 @@ jobs:
             - name: output key_pair_name
               id: publish-key-pair-name
               run: echo "key_pair_name=$(terraform -chdir=${{ env.JOB_FOLDER }} output -raw key_pair_name)" >> $GITHUB_OUTPUT
-            - name: destroy infra
-              if: always()
-              run: terraform -chdir=create-infra/ destroy -auto-approve
+            #- name: destroy infra
+            #  if: always()
+            #  run: terraform -chdir=create-infra/ destroy -auto-approve
     check_data:
         runs-on: ubuntu-latest
         needs: create-key-pair
