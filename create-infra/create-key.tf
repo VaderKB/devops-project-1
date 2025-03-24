@@ -19,3 +19,7 @@ resource "local_file" "key_pair" {
 output "key_pair_output" {
   value = var.private_key_name
 }
+
+output "key_pair_name" {
+  value = aws_key_pair.my-ec2-pair.key_name
+}
