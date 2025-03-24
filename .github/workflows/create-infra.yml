@@ -29,7 +29,7 @@ jobs:
               run: terraform -chdir=${{ env.JOB_FOLDER }} apply -auto-approve
             - name: Prepare cache folder
               run: |
-                mkdir ${{ env.CACHE_FOLDER }}/create_keys_cache
+                mkdir -p ${{ env.CACHE_FOLDER }}/create_keys_cache
                 cp "${{ env.JOB_FOLDER }}terraform.tfstate" "${{ env.JOB_FOLDER }}$(terraform output -raw key_pair_output)" ${{ env.CACHE_FOLDER }}/create_keys_cache/
                 ls -lrt ${{ env.CACHE_FOLDER }}/create_keys_cache/
             - name: cache data
