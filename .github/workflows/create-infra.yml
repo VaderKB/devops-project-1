@@ -26,10 +26,9 @@ jobs:
                 cd create-infra
                 ls -lart
             - name: cache data
-              uses: actions/checkout@v4
+              uses: actions/cache@v4
               with:
                 path: terraform output -raw key_pair_output
                 key: ec2-key
             - name: destroy infra
               run: terraform -chdir=create-infra/ destroy -auto-approve
-
