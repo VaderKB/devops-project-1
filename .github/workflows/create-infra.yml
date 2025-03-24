@@ -47,7 +47,7 @@ jobs:
         needs: create-key-pair
         steps:
             - name: check the output from previous job
-              run: echo "aws key pair value is: ${{ needs.create-key-pair.outputs.key_pair_name}}"
+              run: echo "aws key pair value is ${{ needs.create-key-pair.outputs.key_pair_name}}"
             - name: load cache
               uses: actions/cache@v4
               with:
