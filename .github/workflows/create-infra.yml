@@ -33,7 +33,7 @@ jobs:
             - name: cache data
               uses: actions/cache@v4
               with:
-                path: "${{ env.JOB_FOLDER }}/$(terraform -chdir=create-infra/ output key_pair_output)"
+                path: "${{ env.JOB_FOLDER }}$(terraform -chdir=create-infra/ output key_pair_output)"
                 key: ec2-key
             - name: destroy infra
               run: terraform -chdir=create-infra/ destroy -auto-approve
