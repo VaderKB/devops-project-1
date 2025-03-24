@@ -4,6 +4,7 @@ on:
         branches:
             - main
             - dev
+    workflow_dispatch:
 env:
     AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
     AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -38,7 +39,7 @@ jobs:
                 key: ec2-key-setup-test
             - name: output key_pair_name
               id: publish-key-pair-name
-              run: echo "key_pair_name=$(terraform -chdir=${{ env.JOB_FOLDER }} output -raw key_pair_name)" >> $GITHUB_OUTPUT ';'
+              run: echo "key_pair_name=$(terraform -chdir=${{ env.JOB_FOLDER }} output -raw key_pair_name)" >> $GITHUB_OUTPUT
             - name: destroy infra
               if: always()
               run: terraform -chdir=create-infra/ destroy -auto-approve
