@@ -14,7 +14,7 @@ jobs:
         env:
             JOB_FOLDER: create-infra/
         outputs:
-            key_pair_name: ${{ steps. }}
+            key_pair_name: ${{ steps.publish-key-pair-name.outputs.key_pair_name }}
         runs-on: ubuntu-latest
         steps:
             - name: checkout code
@@ -38,7 +38,7 @@ jobs:
                 key: ec2-key-setup-test
             - name: output key_pair_name
               id: publish-key-pair-name
-              run: echo "key_pair_name=$(terraform -chdir=${{ env.JOB_FOLDER }} output -raw key_pair_name)"
+              run: echo "key_pair_name=$(terraform -chdir=${{ env.JOB_FOLDER }} output -raw key_pair_name)" >> $GITHUB_OUTPUT ';'
             - name: destroy infra
               if: always()
               run: terraform -chdir=create-infra/ destroy -auto-approve
