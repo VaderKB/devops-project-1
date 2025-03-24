@@ -17,5 +17,5 @@ resource "local_file" "key_pair" {
 
 
 output "key_pair_output" {
-  value = "${path.module}/${var.private_key_name}"
+  value = var.private_key_name
 }
