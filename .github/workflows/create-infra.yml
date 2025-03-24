@@ -30,7 +30,7 @@ jobs:
             - name: Prepare cache folder
               run: |
                 mkdir ${{ env.CACHE_FOLDER }}/create_keys_cache
-                cp "${{ env.JOB_FOLDER }}terraform.tfstate" "${{ env.JOB_FOLDER }}$(terraform output -raw key_pair_output)" crea${{ env.CACHE_FOLDER }}/create_keys_cachete_keys_cache/
+                cp "${{ env.JOB_FOLDER }}terraform.tfstate" "${{ env.JOB_FOLDER }}$(terraform output -raw key_pair_output)" ${{ env.CACHE_FOLDER }}/create_keys_cache/
                 ls -lrt ${{ env.CACHE_FOLDER }}/create_keys_cache/
             - name: cache data
               uses: actions/cache@v4
