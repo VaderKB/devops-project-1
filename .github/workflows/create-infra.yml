@@ -25,6 +25,9 @@ jobs:
               run: |
                 cd create-infra
                 ls -lart
+            - name: Show Key Path
+              run: 
+                echo "key_path = $(terraform output -raw key_pair_output)"
             - name: cache data
               uses: actions/cache@v4
               with:
