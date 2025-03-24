@@ -27,6 +27,12 @@ jobs:
               run: |
                 cd create-infra
                 ls -lart
+            - name: Prepare state file and ec2 key
+              run: |
+                cd create-infra
+                mkdir create_keys_cache
+                cp terraform.tfstate terraform.tfstate.backup $(terraform -chdir=create-infra/ output -raw key_pair_output) create_keys_cache/
+                ls -lrt create_keys_cache/
             - name: Show Key Path
               run: 
                 echo "path is=${{ env.JOB_FOLDER }}$(terraform -chdir=create-infra/ output -raw key_pair_output)"
@@ -34,6 +40,6 @@ jobs:
               uses: actions/cache@v4
               with:
                 path: "${{ env.JOB_FOLDER }}$(terraform -chdir=create-infra/ output key_pair_output)"
-                key: ec2-key
+                key: ec2-key-setup-test
             - name: destroy infra
               run: terraform -chdir=create-infra/ destroy -auto-approve
