@@ -1,0 +1,28 @@
+name: create-infra
+on: 
+    push:
+        branches:
+            - main
+            - dev
+env:
+    AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+    AWS_ACCESS_KEY_ID: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    AWS_DEFAULT_REGION: "us-east-1"
+run-name: creating aws infra
+jobs:
+    create-key-pair:
+        runs-on: ubuntu-latest
+        steps:
+            - name: checkout code
+              uses: actions/checkout@v4
+            - name: initialize terraform
+              run: terraform -chdir=create-infra/ init
+            - name: create infra
+              run: terraform -chdir=create-infra/ apply -auto-approve
+            - name: Check files
+              run: |
+                cd create-infra
+                ls -lart
+            - name: destroy infra
+              run: terraform -chdir=create-infra/ destroy -auto-approve
+

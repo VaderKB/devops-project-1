@@ -1,0 +1,5 @@
+creds.tf
+.terraform
+*.pem
+*.tfstate*
+*lock.hcl
