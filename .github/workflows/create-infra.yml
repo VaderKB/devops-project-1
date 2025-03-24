@@ -11,6 +11,8 @@ env:
 run-name: creating aws infra
 jobs:
     create-key-pair:
+        env:
+            JOB_FOLDER: create-infra/
         runs-on: ubuntu-latest
         steps:
             - name: checkout code
@@ -18,16 +20,16 @@ jobs:
             - name: Install terraform
               uses: hashicorp/setup-terraform@v3
             - name: initialize terraform
-              run: terraform -chdir=create-infra/ init
+              run: terraform -chdir=${{ env.JOB_FOLDER }} init
             - name: create infra
-              run: terraform -chdir=create-infra/ apply -auto-approve
+              run: terraform -chdir=${{ env.JOB_FOLDER }} apply -auto-approve
             - name: Check files
               run: |
                 cd create-infra
                 ls -lart
             - name: Show Key Path
               run: 
-                echo "key_path = $(terraform -chdir=create-infra/ output key_pair_output)"
+                echo "key_path = $(terraform -chdir=${{ env.JOB_FOLDER }} output key_pair_output)"
             - name: cache data
               uses: actions/cache@v4
               with:
