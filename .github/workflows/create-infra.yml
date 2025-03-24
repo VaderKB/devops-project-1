@@ -54,5 +54,6 @@ jobs:
               with:
                 path: "."
                 key: ec2-key-setup-test
+                restore-keys: ec2
             - name: check
               run: ls -lrt
