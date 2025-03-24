@@ -9,11 +9,12 @@ env:
     AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
     AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
     AWS_DEFAULT_REGION: "us-east-1"
+    CACHE_FOLDER: cache_data
 run-name: creating aws infra
 jobs:
     create-key-pair:
         env:
-            JOB_FOLDER: create-infra/
+            JOB_FOLDER: create-infra/  
         outputs:
             key_pair_name: ${{ steps.publish-key-pair-name.outputs.key_pair_name }}
         runs-on: ubuntu-latest
@@ -26,16 +27,15 @@ jobs:
               run: terraform -chdir=${{ env.JOB_FOLDER }} init
             - name: create infra
               run: terraform -chdir=${{ env.JOB_FOLDER }} apply -auto-approve
-            - name: Prepare state file and ec2 key
+            - name: Prepare cache folder
               run: |
-                cd ${{ env.JOB_FOLDER }}
-                mkdir create_keys_cache
-                cp terraform.tfstate "$(terraform output -raw key_pair_output)" create_keys_cache/
-                ls -lrt create_keys_cache/
+                mkdir ${{ env.CACHE_FOLDER }}/create_keys_cache
+                cp "${{ env.JOB_FOLDER }}terraform.tfstate" "${{ env.JOB_FOLDER }}$(terraform output -raw key_pair_output)" crea${{ env.CACHE_FOLDER }}/create_keys_cachete_keys_cache/
+                ls -lrt ${{ env.CACHE_FOLDER }}/create_keys_cache/
             - name: cache data
               uses: actions/cache@v4
               with:
-                path: "${{ env.JOB_FOLDER }}create_keys_cache"
+                path: "${{ env.CACHE_FOLDER }}/create_keys_cache"
                 key: ec2-key-setup-test
             - name: output key_pair_name
               id: publish-key-pair-name
