@@ -33,6 +33,8 @@ jobs:
                 cd create-infra
                 mkdir create_keys_cache
                 cp terraform.tfstate create_keys_cache/
+                ls -lrt
+                echo "blah=$(terraform -chdir=create-infra/ output -raw key_pair_output)"
                 cp "$(terraform -chdir=create-infra/ output -raw key_pair_output)" create_keys_cache/
                 ls -lrt create_keys_cache/
             - name: Show Key Path
@@ -44,4 +46,5 @@ jobs:
                 path: "${{ env.JOB_FOLDER }}$(terraform -chdir=create-infra/ output key_pair_output)"
                 key: ec2-key-setup-test
             - name: destroy infra
+              if: always()
               run: terraform -chdir=create-infra/ destroy -auto-approve
