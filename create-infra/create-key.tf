@@ -14,3 +14,8 @@ resource "local_file" "key_pair" {
   content = tls_private_key.rsa-4096-key.private_key_openssh
   filename = "${path.module}/${var.private_key_name}"
 }
+
+
+output "key_pair_output" {
+  value = "${path.module}/${var.private_key_name}"
+}

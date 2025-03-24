@@ -28,7 +28,8 @@ jobs:
             - name: cache data
               uses: actions/checkout@v4
               with:
-                path: ec2-key
+                path: terraform output -raw key_pair_output
+                key: ec2-key
             - name: destroy infra
               run: terraform -chdir=create-infra/ destroy -auto-approve
 
