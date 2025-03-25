@@ -14,7 +14,7 @@ run-name: creating aws infra
 jobs:
     create-key-pair:
         env:
-            JOB_FOLDER: create-infra/  
+            JOB_FOLDER: create-keys/  
         outputs:
             key_pair_name: ${{ steps.publish-key-pair-name.outputs.key_pair_name }}
         runs-on: ubuntu-latest
@@ -42,14 +42,48 @@ jobs:
             - name: destroy infra
               if: always()
               run: terraform -chdir=create-infra/ destroy -auto-approve
+    create-security-group:
+        runs-on: ubuntu_latest
+        env:
+            JOB_FOLDER: create-sg
+        outputs:
+            sg_ids: {{ steps.publish-sg-id.outputs }}
+        steps:
+          - name: Get code
+            uses: action/checkout@v4
+          - name: Install terraform
+            uses: hashicorp/setup-terraform@v3
+          - name: Initialize terraform
+            run: terraform -chdir=${{ env.JOB_FOLDER }} init
+          - name: create infra
+            run: terraform -chdir=${{ env.JOB_FOLDER }} apply -auto-approve
+          - name: Prepare cache folder
+            run: |
+              mkdir -p {{ env.CACHE_FOLDER }}/create_sg
+              cp "{{ env.JOB_FOLDER }}/terraform.tfstate" {{ env.CACHE_FOLDER }}/create_sg/
+          - name: cache data
+            uses: actions/cache@v4
+            with:
+              path: "${{ env.CACHE_FOLDER }}/"
+              key: ec2-key-setup-test
+          - name: output sg ids
+            id: publish-sg-id
+            run: echo "sg_grp_ids=$(terraform -chdir=${{env.JOB_FOLDER}} output -raw aws_security_group_ids)" >> $GITHUB_OUTPUT
+          - name: destroy infra
+            if: any()
+            run: terraform -chdir={{ env.JOB_FOLDER }} destroy -auto-approve
     check_data:
         runs-on: ubuntu-latest
-        needs: create-key-pair
+        needs: 
+          - create-key-pair
+          - create-sg
         env:
             JOB_FOLDER: create-infra/
         steps:
             - name: check the output from previous job
-              run: echo "aws key pair value is ${{ needs.create-key-pair.outputs.key_pair_name}}"
+              run: |
+               echo "aws key pair value is ${{ needs.create-key-pair.outputs.key_pair_name}}"
+               echo "the value of sg group ids is ${{ needs.create-sg.outputs.sg_grp_ids }}"
             - name: load cache
               uses: actions/cache@v4
               with:
