@@ -43,7 +43,7 @@ jobs:
               if: always()
               run: terraform -chdir=${{ env.JOB_FOLDER }} destroy -auto-approve
     create-security-group:
-        runs-on: ubuntu_latest
+        runs-on: ubuntu-latest
         env:
             JOB_FOLDER: create-sg
         outputs:
