@@ -68,7 +68,9 @@ jobs:
               key: "ec2-key-setup-test-job2-${{ github.run_number }}"
           - name: output sg ids
             id: publish-sg-id
-            run: echo "sg_grp_ids=$(terraform -chdir=${{env.JOB_FOLDER}} output -raw aws_security_group_ids)" >> $GITHUB_OUTPUT
+            run: |
+             echo "sg_grp_ids=$(terraform -chdir=${{env.JOB_FOLDER}} output -raw aws_security_group_ids)"
+             echo "sg_grp_ids=$(terraform -chdir=${{env.JOB_FOLDER}} output -raw aws_security_group_ids)" >> $GITHUB_OUTPUT
           - name: destroy infra
             if: always()
             run: terraform -chdir=${{ env.JOB_FOLDER }} destroy -auto-approve
