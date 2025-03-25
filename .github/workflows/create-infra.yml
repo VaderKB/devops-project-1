@@ -19,6 +19,8 @@ jobs:
             key_pair_name: ${{ steps.publish-key-pair-name.outputs.key_pair_name }}
         runs-on: ubuntu-latest
         steps:
+            - name: show run id
+              run: echo "${{ github.run_number }}"
             - name: checkout code
               uses: actions/checkout@v4
             - name: Install terraform
@@ -49,6 +51,8 @@ jobs:
         outputs:
             sg_ids: ${{ steps.publish-sg-id.outputs.sg_grp_ids }}
         steps:
+          - name: show run id
+            run: echo "${{ github.run_number }}"
           - name: Get code
             uses: actions/checkout@v4
           - name: Install terraform
