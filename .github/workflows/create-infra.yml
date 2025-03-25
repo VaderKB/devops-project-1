@@ -33,6 +33,7 @@ jobs:
                 cp -r "${{ env.JOB_FOLDER }}terraform.tfstate" \
                 "${{ env.JOB_FOLDER }}$(terraform -chdir=${{ env.JOB_FOLDER }} output -raw key_pair_output)" \
                 "${{ env.JOB_FOLDER }}.terraform" \
+                "${{ env.JOB_FOLDER }}.terraform.lock.hcl" \
                 ${{ env.CACHE_FOLDER }}/create_keys_cache/
             - name: cache data
               uses: actions/cache@v4
@@ -60,7 +61,10 @@ jobs:
           - name: Prepare cache folder
             run: |
               mkdir -p ${{ env.CACHE_FOLDER }}/create_sg
-              cp -r "${{ env.JOB_FOLDER }}/terraform.tfstate" "${{ env.JOB_FOLDER }}/.terraform" ${{ env.CACHE_FOLDER }}/create_sg/
+              cp -r "${{ env.JOB_FOLDER }}/terraform.tfstate" \
+              "${{ env.JOB_FOLDER }}/.terraform" \
+              "${{ env.JOB_FOLDER }}/.terraform.lock.hcl" \
+              ${{ env.CACHE_FOLDER }}/create_sg/
           - name: cache data
             uses: actions/cache@v4
             with:

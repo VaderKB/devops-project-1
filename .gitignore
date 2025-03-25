@@ -3,3 +3,4 @@ creds.tf
 *.pem
 *.tfstate*
 *lock.hcl
+test
