@@ -47,7 +47,7 @@ jobs:
         env:
             JOB_FOLDER: create-sg
         outputs:
-            sg_ids: {{ steps.publish-sg-id.outputs }}
+            sg_ids: ${{ steps.publish-sg-id.outputs.sg_grp_ids }}
         steps:
           - name: Get code
             uses: action/checkout@v4
