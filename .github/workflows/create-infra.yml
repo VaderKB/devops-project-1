@@ -92,7 +92,7 @@ jobs:
               run: | 
                 terraform -chdir=${{ env.JOB_FOLDER }} apply \
                 -var="key_pair_name=${{ needs.create-key-pair.outputs.key_pair_name }}" \
-                -var='security_group_id_list=${{ needs.create-security-group.outputs.sg_ids }}'
+                -var='security_group_id_list=${{ needs.create-security-group.outputs.sg_ids }}' \
                 -auto-approve
             - name: destroy infra
               if: always()
