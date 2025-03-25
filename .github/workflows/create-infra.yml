@@ -41,7 +41,7 @@ jobs:
               run: echo "key_pair_name=$(terraform -chdir=${{ env.JOB_FOLDER }} output -raw key_pair_name)" >> $GITHUB_OUTPUT
             - name: destroy infra
               if: always()
-              run: terraform -chdir=create-infra/ destroy -auto-approve
+              run: terraform -chdir=${{ env.JOB_FOLDER }} destroy -auto-approve
     create-security-group:
         runs-on: ubuntu_latest
         env:
