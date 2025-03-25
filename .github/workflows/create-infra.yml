@@ -68,30 +68,7 @@ jobs:
             run: |
              echo "sg_grp_ids=$(terraform -chdir=${{env.JOB_FOLDER}} output -json aws_security_group_ids | jq -c '.')"
              echo "sg_grp_ids=$(terraform -chdir=${{env.JOB_FOLDER}} output -json aws_security_group_ids)" >> $GITHUB_OUTPUT
-    create-vm:
-        runs-on: ubuntu-latest
-        env:
-            JOB_FOLDER: create-vm/  
-        needs:
-          - create-key-pair
-          - create-security-group
-        steps:
-            - name: Get code
-              uses: actions/checkout@v4
-            - name: Install terraform
-              uses: hashicorp/setup-terraform@v3
-            - name: Initialize terraform
-              run: terraform -chdir=${{ env.JOB_FOLDER }} init
-            - name: create infra
-              run: | 
-                terraform -chdir=${{ env.JOB_FOLDER }} apply \
-                -var="key_pair_name=${{ needs.create-key-pair.outputs.key_pair_name }}" \
-                -var='security_group_id_list=${{ needs.create-security-group.outputs.sg_ids }}' \
-                -auto-approve
-            - name: destroy infra
-              if: always()
-              run: terraform -chdir=${{ env.JOB_FOLDER }} destroy -auto-approve
-    check_data:
+    destroy-infra:
         runs-on: ubuntu-latest
         needs: 
           - create-key-pair
@@ -99,16 +76,13 @@ jobs:
         env:
             JOB_FOLDER: create-infra/
         steps:
-            - name: check the output from previous job
-              run: |
-               echo "aws key pair value is ${{ needs.create-key-pair.outputs.key_pair_name}}"
-               echo "the value of sg group ids is ${{ needs.create-security-group.outputs.sg_ids }}"
+            - name: Install terraform
+              uses: hashicorp/setup-terraform@v3
             - name: load cache job1
               uses: actions/cache@v4
               with:
                 path: "${{ env.CACHE_FOLDER }}/create_keys_cache"
                 key: "ec2-key-setup-test-job1-${{ github.run_number }}"
-                restore-keys: ec2
             - name: check
               run: ls -lrt ${{ env.CACHE_FOLDER }}/create_keys_cache
             - name: load cache job2
@@ -116,6 +90,13 @@ jobs:
               with:
                 path: "${{ env.CACHE_FOLDER }}/create_sg"
                 key: "ec2-key-setup-test-job2-${{ github.run_number }}"
-                restore-keys: ec2
             - name: check
               run: ls -lrt ${{ env.CACHE_FOLDER }}/create_sg
+            - name: Initialize terraform
+              run: |
+                terraform -chdir=${{ env.CACHE_FOLDER }}/create_keys_cache init
+                terraform -chdir=${{ env.CACHE_FOLDER }}/create_sg init
+            - name: Destroy infra
+              run: |
+                terraform -chdir=${{ env.CACHE_FOLDER }}/create_keys_cache destroy -auto-approve
+                terraform -chdir=${{ env.CACHE_FOLDER }}/create_sg destroy -auto-approve 
