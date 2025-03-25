@@ -19,8 +19,6 @@ jobs:
             key_pair_name: ${{ steps.publish-key-pair-name.outputs.key_pair_name }}
         runs-on: ubuntu-latest
         steps:
-            - name: show run id
-              run: echo "${{ github.run_number }}"
             - name: checkout code
               uses: actions/checkout@v4
             - name: Install terraform
@@ -37,7 +35,7 @@ jobs:
               uses: actions/cache@v4
               with:
                 path: "${{ env.CACHE_FOLDER }}/"
-                key: ec2-key-setup-test
+                key: "ec2-key-setup-test-${{ github.run_number }}"
             - name: output key_pair_name
               id: publish-key-pair-name
               run: echo "key_pair_name=$(terraform -chdir=${{ env.JOB_FOLDER }} output -raw key_pair_name)" >> $GITHUB_OUTPUT
@@ -51,8 +49,6 @@ jobs:
         outputs:
             sg_ids: ${{ steps.publish-sg-id.outputs.sg_grp_ids }}
         steps:
-          - name: show run id
-            run: echo "${{ github.run_number }}"
           - name: Get code
             uses: actions/checkout@v4
           - name: Install terraform
@@ -69,7 +65,7 @@ jobs:
             uses: actions/cache@v4
             with:
               path: "${{ env.CACHE_FOLDER }}/"
-              key: ec2-key-setup-test
+              key: "ec2-key-setup-test-${{ github.run_number }}"
           - name: output sg ids
             id: publish-sg-id
             run: echo "sg_grp_ids=$(terraform -chdir=${{env.JOB_FOLDER}} output -raw aws_security_group_ids)" >> $GITHUB_OUTPUT
@@ -92,7 +88,7 @@ jobs:
               uses: actions/cache@v4
               with:
                 path: "${{ env.CACHE_FOLDER }}/"
-                key: ec2-key-setup-test
+                key: "ec2-key-setup-test-${{ github.run_number }}"
                 restore-keys: ec2
             - name: check
               run: ls -lrt ${{ env.CACHE_FOLDER }}/
