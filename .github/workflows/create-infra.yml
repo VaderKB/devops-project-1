@@ -70,7 +70,7 @@ jobs:
             id: publish-sg-id
             run: echo "sg_grp_ids=$(terraform -chdir=${{env.JOB_FOLDER}} output -raw aws_security_group_ids)" >> $GITHUB_OUTPUT
           - name: destroy infra
-            if: any()
+            if: always()
             run: terraform -chdir={{ env.JOB_FOLDER }} destroy -auto-approve
     check_data:
         runs-on: ubuntu-latest
