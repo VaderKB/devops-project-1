@@ -9,6 +9,10 @@ resource "aws_instance" "vm" {
   vpc_security_group_ids = [var.security_group_id_list[count.index]]
 }
 
-output "myEc2Ip" {
-  value = aws_instance.vm.public_ip
+output "myEc2Ip1" {
+  value = aws_instance.vm[0].public_ip
+}
+
+output "myEc2Ipé" {
+  value = aws_instance.vm[1].public_ip
 }
