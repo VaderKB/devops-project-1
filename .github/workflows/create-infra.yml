@@ -85,7 +85,7 @@ jobs:
             - name: check the output from previous job
               run: |
                echo "aws key pair value is ${{ needs.create-key-pair.outputs.key_pair_name}}"
-               echo "the value of sg group ids is ${{ needs.create-security-group.outputs.sg_grp_ids }}"
+               echo "the value of sg group ids is ${{ needs.create-security-group.outputs.sg_ids }}"
             - name: load cache job1
               uses: actions/cache@v4
               with:
