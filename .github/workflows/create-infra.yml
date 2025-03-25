@@ -75,6 +75,55 @@ jobs:
             run: |
              echo "sg_grp_ids=$(terraform -chdir=${{env.JOB_FOLDER}} output -json aws_security_group_ids | jq -c '.')"
              echo "sg_grp_ids=$(terraform -chdir=${{env.JOB_FOLDER}} output -json aws_security_group_ids)" >> $GITHUB_OUTPUT
+    create-vm:
+        runs-on: ubuntu-latest
+        env:
+            JOB_FOLDER: create-vm/  
+        needs:
+          - create-key-pair
+          - create-security-group
+        outputs:
+          ec2-public-ip1: ${{ steps.publish-ip-address.outputs.ec2_public_ip1 }}
+          ec2-public-ip2: ${{ steps.publish-ip-address.outputs.ec2_public_ip2 }}
+        steps:
+            - name: Get code
+              uses: actions/checkout@v4
+            - name: Install terraform
+              uses: hashicorp/setup-terraform@v3
+            - name: Initialize terraform
+              run: terraform -chdir=${{ env.JOB_FOLDER }} init
+            - name: create infra
+              run: | 
+                terraform -chdir=${{ env.JOB_FOLDER }} apply \
+                -var="key_pair_name=${{ needs.create-key-pair.outputs.key_pair_name }}" \
+                -var='security_group_id_list=${{ needs.create-security-group.outputs.sg_ids }}' \
+                -auto-approve
+            - name: Prepare cache folder
+              run: |
+                mkdir -p ${{ env.CACHE_FOLDER }}/create_vm
+                cp -r "${{ env.JOB_FOLDER }}/terraform.tfstate" \
+                "${{ env.JOB_FOLDER }}/.terraform" \
+                "${{ env.JOB_FOLDER }}/.terraform.lock.hcl" \
+                ${{ env.CACHE_FOLDER }}/create_vm/
+            - name: cache data
+              uses: actions/cache@v4
+              with:
+                path: "${{ env.CACHE_FOLDER }}/create_vm"
+                key: "ec2-key-setup-test-job3-${{ github.run_number }}"
+            - name: output ec2 ip address
+              id: publish-ip-address
+              run: | 
+                echo "ec2_public_ip1=$( terraform -chdir=${{ env.JOB_FOLDER }} output -raw myEc2Ip1 )" >> $GITHUB_OUTPUT
+                echo "ec2_public_ip2=$( terraform -chdir=${{ env.JOB_FOLDER }} output -raw myEc2Ip2 )" >> $GITHUB_OUTPUT
+    display-data:
+        runs-on: ubuntu-latest
+        needs:
+          - create-vm
+        steps:
+          - name: Show ips
+            run: |
+              echo "ip1=${{ needs.create-vm.outputs.ec2-public-ip1 }}"
+              echo "ip2=${{ needs.create-vm.outputs.ec2-public-ip2 }}"
     destroy-infra:
         runs-on: ubuntu-latest
         needs: 
@@ -99,11 +148,20 @@ jobs:
                 key: "ec2-key-setup-test-job2-${{ github.run_number }}"
             - name: check
               run: ls -lart ${{ env.CACHE_FOLDER }}/create_sg
+            - name: load cache job3
+              uses: actions/cache@v4
+              with:
+                path: "${{ env.CACHE_FOLDER }}/create_vm"
+                key: "ec2-key-setup-test-job3-${{ github.run_number }}"
+            - name: check
+              run: ls -lart ${{ env.CACHE_FOLDER }}/create_vm
             - name: Initialize terraform
               run: |
                 terraform -chdir=${{ env.CACHE_FOLDER }}/create_keys_cache init
                 terraform -chdir=${{ env.CACHE_FOLDER }}/create_sg init
+                terraform -chdir=${{ env.CACHE_FOLDER }}/create_vm init
             - name: Destroy infra
               run: |
                 terraform -chdir=${{ env.CACHE_FOLDER }}/create_keys_cache destroy -auto-approve
                 terraform -chdir=${{ env.CACHE_FOLDER }}/create_sg destroy -auto-approve 
+                terraform -chdir=${{ env.CACHE_FOLDER }}/create_vm destroy -auto-approve 
