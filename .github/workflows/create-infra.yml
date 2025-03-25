@@ -69,7 +69,7 @@ jobs:
           - name: output sg ids
             id: publish-sg-id
             run: |
-             echo "sg_grp_ids=$(terraform -chdir=${{env.JOB_FOLDER}} output -json aws_security_group_ids)"
+             echo "sg_grp_ids=$(terraform -chdir=${{env.JOB_FOLDER}} output -json aws_security_group_ids | jq -c '.')"
              echo "sg_grp_ids=$(terraform -chdir=${{env.JOB_FOLDER}} output aws_security_group_ids)" >> $GITHUB_OUTPUT
           - name: destroy infra
             if: always()
