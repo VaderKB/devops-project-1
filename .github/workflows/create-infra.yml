@@ -129,6 +129,7 @@ jobs:
         needs: 
           - create-key-pair
           - create-security-group
+          - create-vm
         env:
             JOB_FOLDER: create-infra/
         steps:
