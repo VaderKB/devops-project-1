@@ -91,4 +91,4 @@ jobs:
                 key: ec2-key-setup-test
                 restore-keys: ec2
             - name: check
-              run: ls -lrt
+              run: ls -lrt ${{ env.CACHE_FOLDER }}/
