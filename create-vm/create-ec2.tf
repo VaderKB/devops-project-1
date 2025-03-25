@@ -13,6 +13,6 @@ output "myEc2Ip1" {
   value = aws_instance.vm[0].public_ip
 }
 
-output "myEc2Ipé" {
+output "myEc2Ip2" {
   value = aws_instance.vm[1].public_ip
 }
