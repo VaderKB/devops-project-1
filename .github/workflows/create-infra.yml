@@ -74,6 +74,29 @@ jobs:
           - name: destroy infra
             if: always()
             run: terraform -chdir=${{ env.JOB_FOLDER }} destroy -auto-approve
+    create-vm:
+        runs-on: ubuntu-latest
+        env:
+            JOB_FOLDER: create-vm/  
+        needs:
+          - create-key-pair
+          - create-security-group
+        steps:
+            - name: Get code
+              uses: actions/checkout@v4
+            - name: Install terraform
+              uses: hashicorp/setup-terraform@v3
+            - name: Initialize terraform
+              run: terraform -chdir=${{ env.JOB_FOLDER }} init
+            - name: create infra
+              run: | 
+                terraform -chdir=${{ env.JOB_FOLDER }} apply \
+                -var="key_pair_name=${{ needs.create-key-pair.outputs.key_pair_name }}" \
+                -var='security_group_id_list=${{ needs.create-security-group.outputs.sg_ids }}'
+                -auto-approve
+            - name: destroy infra
+              if: always()
+              run: terraform -chdir=${{ env.JOB_FOLDER }} destroy -auto-approve
     check_data:
         runs-on: ubuntu-latest
         needs: 
