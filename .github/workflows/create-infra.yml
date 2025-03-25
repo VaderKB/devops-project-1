@@ -34,8 +34,8 @@ jobs:
             - name: cache data
               uses: actions/cache@v4
               with:
-                path: "${{ env.CACHE_FOLDER }}/"
-                key: "ec2-key-setup-test-${{ github.run_number }}"
+                path: "${{ env.CACHE_FOLDER }}/create_keys_cache"
+                key: "ec2-key-setup-test-job1-${{ github.run_number }}"
             - name: output key_pair_name
               id: publish-key-pair-name
               run: echo "key_pair_name=$(terraform -chdir=${{ env.JOB_FOLDER }} output -raw key_pair_name)" >> $GITHUB_OUTPUT
@@ -64,8 +64,8 @@ jobs:
           - name: cache data
             uses: actions/cache@v4
             with:
-              path: "${{ env.CACHE_FOLDER }}/"
-              key: "ec2-key-setup-test-${{ github.run_number }}"
+              path: "${{ env.CACHE_FOLDER }}/create_sg"
+              key: "ec2-key-setup-test-job2-${{ github.run_number }}"
           - name: output sg ids
             id: publish-sg-id
             run: echo "sg_grp_ids=$(terraform -chdir=${{env.JOB_FOLDER}} output -raw aws_security_group_ids)" >> $GITHUB_OUTPUT
@@ -84,11 +84,19 @@ jobs:
               run: |
                echo "aws key pair value is ${{ needs.create-key-pair.outputs.key_pair_name}}"
                echo "the value of sg group ids is ${{ needs.create-security-group.outputs.sg_grp_ids }}"
-            - name: load cache
+            - name: load cache job1
               uses: actions/cache@v4
               with:
-                path: "${{ env.CACHE_FOLDER }}/"
-                key: "ec2-key-setup-test-${{ github.run_number }}"
+                path: "${{ env.CACHE_FOLDER }}/create_keys_cache"
+                key: "ec2-key-setup-test-job1-${{ github.run_number }}"
                 restore-keys: ec2
             - name: check
-              run: ls -lrt ${{ env.CACHE_FOLDER }}/
+              run: ls -lrt ${{ env.CACHE_FOLDER }}/create_keys_cache
+            - name: load cache job2
+              uses: actions/cache@v4
+              with:
+                path: "${{ env.CACHE_FOLDER }}/create_sg"
+                key: "ec2-key-setup-test-job2-${{ github.run_number }}"
+                restore-keys: ec2
+            - name: check
+              run: ls -lrt ${{ env.CACHE_FOLDER }}/create_sg
