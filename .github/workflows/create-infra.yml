@@ -76,14 +76,14 @@ jobs:
         runs-on: ubuntu-latest
         needs: 
           - create-key-pair
-          - create-sg
+          - create-security-group
         env:
             JOB_FOLDER: create-infra/
         steps:
             - name: check the output from previous job
               run: |
                echo "aws key pair value is ${{ needs.create-key-pair.outputs.key_pair_name}}"
-               echo "the value of sg group ids is ${{ needs.create-sg.outputs.sg_grp_ids }}"
+               echo "the value of sg group ids is ${{ needs.create-security-group.outputs.sg_grp_ids }}"
             - name: load cache
               uses: actions/cache@v4
               with:
