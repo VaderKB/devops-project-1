@@ -50,7 +50,7 @@ jobs:
             sg_ids: ${{ steps.publish-sg-id.outputs.sg_grp_ids }}
         steps:
           - name: Get code
-            uses: action/checkout@v4
+            uses: actions/checkout@v4
           - name: Install terraform
             uses: hashicorp/setup-terraform@v3
           - name: Initialize terraform
