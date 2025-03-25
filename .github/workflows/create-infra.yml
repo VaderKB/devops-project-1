@@ -163,10 +163,7 @@ jobs:
                 terraform -chdir=${{ env.CACHE_FOLDER }}/create_vm init
             - name: Destroy infra
               run: |
-                terraform -chdir=${{ env.CACHE_FOLDER }}/create_vm destroy \
-                -var="key_pair_name=${{ needs.create-key-pair.outputs.key_pair_name }}" \
-                -var='security_group_id_list=${{ needs.create-security-group.outputs.sg_ids }}' \
-                -auto-approve
+                terraform -chdir=${{ env.CACHE_FOLDER }}/create_vm destroy -auto-approve
                 terraform -chdir=${{ env.CACHE_FOLDER }}/create_keys_cache destroy -auto-approve
                 terraform -chdir=${{ env.CACHE_FOLDER }}/create_sg destroy -auto-approve
 
