@@ -142,6 +142,7 @@ jobs:
           - create-key-pair
           - create-security-group
           - create-vm
+          - ssh-into-ec2
         env:
             JOB_FOLDER: create-infra/
         steps:
