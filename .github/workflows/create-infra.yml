@@ -30,7 +30,10 @@ jobs:
             - name: Prepare cache folder
               run: |
                 mkdir -p ${{ env.CACHE_FOLDER }}/create_keys_cache
-                cp "${{ env.JOB_FOLDER }}terraform.tfstate" "${{ env.JOB_FOLDER }}$(terraform -chdir=${{ env.JOB_FOLDER }} output -raw key_pair_output)" ${{ env.CACHE_FOLDER }}/create_keys_cache/
+                cp "${{ env.JOB_FOLDER }}terraform.tfstate" \
+                ${{ env.JOB_FOLDER }}$(terraform -chdir=${{ env.JOB_FOLDER }} output -raw key_pair_output)" \
+                "${{ env.JOB_FOLDER }}.terraform" \
+                ${{ env.CACHE_FOLDER }}/create_keys_cache/
             - name: cache data
               uses: actions/cache@v4
               with:
@@ -57,7 +60,7 @@ jobs:
           - name: Prepare cache folder
             run: |
               mkdir -p ${{ env.CACHE_FOLDER }}/create_sg
-              cp "${{ env.JOB_FOLDER }}/terraform.tfstate" ${{ env.CACHE_FOLDER }}/create_sg/
+              cp "${{ env.JOB_FOLDER }}/terraform.tfstate" "${{ env.JOB_FOLDER }}.terraform" ${{ env.CACHE_FOLDER }}/create_sg/
           - name: cache data
             uses: actions/cache@v4
             with:
@@ -84,14 +87,14 @@ jobs:
                 path: "${{ env.CACHE_FOLDER }}/create_keys_cache"
                 key: "ec2-key-setup-test-job1-${{ github.run_number }}"
             - name: check
-              run: ls -lrt ${{ env.CACHE_FOLDER }}/create_keys_cache
+              run: ls -lart ${{ env.CACHE_FOLDER }}/create_keys_cache
             - name: load cache job2
               uses: actions/cache@v4
               with:
                 path: "${{ env.CACHE_FOLDER }}/create_sg"
                 key: "ec2-key-setup-test-job2-${{ github.run_number }}"
             - name: check
-              run: ls -lrt ${{ env.CACHE_FOLDER }}/create_sg
+              run: ls -lart ${{ env.CACHE_FOLDER }}/create_sg
             - name: Initialize terraform
               run: |
                 terraform -chdir=${{ env.CACHE_FOLDER }}/create_keys_cache init
